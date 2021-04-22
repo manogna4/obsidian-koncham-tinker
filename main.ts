@@ -45,53 +45,8 @@ export default class MyPlugin extends Plugin {
 	}
 
 	placeholder3() {
-		let max_char = 120
-		let tags_special = ['#todo', '#curr', '#done']
-		let view = this.app.workspace.activeLeaf.view;
-		let file = this.app.workspace.getActiveFile();
-		let file_cache = this.app.metadataCache.getFileCache(file);
-		console.log(file_cache)
-		let tags_all = Object.values(file_cache.tags)
-		let tags_spl = tags_all.filter(item => (tags_special.includes(item.tag)))
-		let tags_line_beg = tags_spl.filter(item => (item.position.start.col == 0))
-		let tags_section_head = tags_line_beg.filter(isSectionHead)
-		console.log(tags_section_head);
-
-
-		// tags_line_beg.forEach(element => {
-		// 	if (view instanceof MarkdownView) {
-		// 		let line = view.editor.getLine(element.position.start.line - 1)
-		// 		console.log(line)
-		// 		console.log( line === '');
-		// 	}
-		// })
-
-		function isSectionHead(item: any){
-			let line_num = item.position.start.line
-			if (view instanceof MarkdownView) {
-				if (line_num == 0) {
-					return true
-				} else if (view.editor.getLine(line_num - 1) === ''){
-					return true
-				} else {
-					return false
-				}
-			}
-		}
-
-		let tag_data = []
-		for (const [key, value] of Object.entries(tags_section_head)) {
-			if (view instanceof MarkdownView && tags_special.includes(value.tag)) {
-				let line = view.editor.getLine(value.position.start.line)
-				let start_position = line.search(" ");
-				let task_name = line.substring(start_position, start_position + max_char);
-				tag_data.push([value.tag, task_name, start_position])
-				// console.log(value.tag, ' -- ', task_name);
-			}
-		}
-
-		console.log(tag_data)
-
+		console.log(plugin_name + ': placeholder3')
+		
 	}
 }
 	
