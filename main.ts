@@ -1,147 +1,102 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownView, Workspace} from 'obsidian';
-import { WorkspaceSplit, WorkspaceLeaf, WorkspaceItem } from 'obsidian';
-import { ItemView, Menu } from 'obsidian';
-
+import { Editor, MarkdownView, Plugin} from 'obsidian';
 const plugin_name = 'koncham-tinker'
 
-const view_type = 'root-leaves-list'
-
 export default class MyPlugin extends Plugin {
-	public view: RootLeavesListView;
-
-	async onload() {
-		console.log('loading plugin: ' + plugin_name);
-
-		this.registerView(
-			view_type,
-			(leaf) => (this.view = new RootLeavesListView(leaf, this))
-		);
-
-		if (this.app.workspace.layoutReady) {
-			this.initView();
-		} else {
-			this.registerEvent(this.app.workspace.on('layout-ready', this.initView));
-		}
-
-		this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleFocusChange));
-
-		this.addCommand({
-			id: 'leaves-iterate',
-			name: 'leaves-iterate',
-			hotkeys: [{"modifiers": ["Alt"],"key": "y"}],
-			callback: () => this.leavesIterate(),
-		});
-
-		this.addCommand({
-			id: 'placeholder',
-			name: 'placeholder',
-			hotkeys: [{ "modifiers": ["Alt"], "key": "k" }],
-			callback: () => this.placeholder(),
-		});
-
-	}
-
-	private readonly initView = (): void => {
-		if (this.app.workspace.getLeavesOfType(view_type).length) {
-			return;
-		}
-		this.app.workspace.getLeftLeaf(false).setViewState({
-			type: view_type,
-			active: true,
-		});
-	};
-
-	leavesIterate() {
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			console.log(leaf.getDisplayText());
-			console.log(leaf.getViewState());
-		});
-	}
-
-	placeholder() {
-		let leaf_curr = this.app.workspace.activeLeaf;
-		let varm = this.app.workspace.createLeafBySplit(leaf_curr, 'horizontal', true);
-		console.log(varm);
-	}
-
-	private readonly handleFocusChange = async() => {
-		this.view.initialize();
-	}
 
 	onunload() {
 		console.log('unloading plugin: ' + plugin_name);
 	}
 
-}
+	async onload() {
+		console.log('loading plugin: ' + plugin_name);
 
+		this.addCommand({
+			id: 'placeholder1',
+			name: 'placeholder1',
+			hotkeys: [{ "modifiers": [], "key": "F16" }],
+			callback: () => this.placeholder1(),
+		});
 
-class RootLeavesListView extends ItemView{
-	private readonly plugin: MyPlugin
+		this.addCommand({
+			id: 'placeholder2',
+			name: 'placeholder2',
+			hotkeys: [{ "modifiers": [], "key": "F15" }],
+			callback: () => this.placeholder2(),
+		});
+
+		this.addCommand({
+			id: 'placeholder3',
+			name: 'placeholder3',
+			hotkeys: [{ "modifiers": [], "key": "F14" }],
+			callback: () => this.placeholder3(),
+		});
 	
-	constructor(
-		leaf: WorkspaceLeaf,
-		plugin: MyPlugin,
-	) {
-		super(leaf);
-
-		this.plugin = plugin;
-		this.initialize();
 	}
 
-	public readonly initialize = (): void => {
-		let leaf_active = this.app.workspace.activeLeaf;
-		const rootEl = createDiv({ cls: 'nav-folder mod-root' });
-		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
+	placeholder1() {
 		this.app.workspace.iterateRootLeaves((leaf: any) => {
-			const navFile = childrenEl.createDiv({ cls: 'nav-file' });
-			const navFileTitle = navFile.createDiv({ cls: 'nav-file-title' });
-
-			if (leaf === leaf_active) {
-				navFileTitle.addClass('is-active');
-			}
-
-			navFileTitle.createDiv({
-				cls: 'nav-file-title-content',
-				text: leaf.getDisplayText(),
-			});
-			const contentEl = this.containerEl.children[1];
-			contentEl.empty();
-			contentEl.appendChild(rootEl);
+			console.log(leaf.getDisplayText(), leaf.getViewState());
 		});
 	}
 
-	public getViewType(): string {
-		return view_type;
+	placeholder2() {
+		let var1 = this.app.workspace.activeLeaf.view.containerEl;
+		console.log(var1);
 	}
 
-	public getDisplayText(): string {
-		return 'Root Leaves';
-	}
+	placeholder3() {
+		let max_char = 120
+		let tags_special = ['#todo', '#curr', '#done']
+		let view = this.app.workspace.activeLeaf.view;
+		let file = this.app.workspace.getActiveFile();
+		let file_cache = this.app.metadataCache.getFileCache(file);
+		console.log(file_cache)
+		let tags_all = Object.values(file_cache.tags)
+		let tags_spl = tags_all.filter(item => (tags_special.includes(item.tag)))
+		let tags_line_beg = tags_spl.filter(item => (item.position.start.col == 0))
+		let tags_section_head = tags_line_beg.filter(isSectionHead)
+		console.log(tags_section_head);
 
-	public getIcon(): string {
-		return 'double-down-arrow-glyph';
-	}
 
-	// mch_todo change icons
-	public onHeaderMenu(menu: Menu): void {
-		menu
-			.addItem((item) => {
-				item
-					.setTitle('action1')
-					.setIcon('sweep')
-					.onClick(async () => {
-						new Notice('action1');
-					});
-			})
-			.addItem((item) => {
-				item
-					.setTitle('close')
-					.setIcon('cross')
-					.onClick(() => {
-						this.app.workspace.detachLeavesOfType(view_type);
-					});
-			});
+		// tags_line_beg.forEach(element => {
+		// 	if (view instanceof MarkdownView) {
+		// 		let line = view.editor.getLine(element.position.start.line - 1)
+		// 		console.log(line)
+		// 		console.log( line === '');
+		// 	}
+		// })
+
+		function isSectionHead(item: any){
+			let line_num = item.position.start.line
+			if (view instanceof MarkdownView) {
+				if (line_num == 0) {
+					return true
+				} else if (view.editor.getLine(line_num - 1) === ''){
+					return true
+				} else {
+					return false
+				}
+			}
+		}
+
+		let tag_data = []
+		for (const [key, value] of Object.entries(tags_section_head)) {
+			if (view instanceof MarkdownView && tags_special.includes(value.tag)) {
+				let line = view.editor.getLine(value.position.start.line)
+				let start_position = line.search(" ");
+				let task_name = line.substring(start_position, start_position + max_char);
+				tag_data.push([value.tag, task_name, start_position])
+				// console.log(value.tag, ' -- ', task_name);
+			}
+		}
+
+		console.log(tag_data)
+
 	}
 }
+	
+
+
+
 
 
