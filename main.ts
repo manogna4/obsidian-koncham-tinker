@@ -13,43 +13,42 @@ export default class MyPlugin extends Plugin {
 		this.addCommand({
 			id: 'placeholder1',
 			name: 'placeholder1',
-			hotkeys: [{ "modifiers": [], "key": "F16" }],
+			hotkeys: [{ "modifiers": [], "key": "F14" }],
 			callback: () => this.placeholder1(),
 		});
 
 		this.addCommand({
 			id: 'placeholder2',
 			name: 'placeholder2',
-			hotkeys: [{ "modifiers": [], "key": "F15" }],
+			hotkeys: [{ "modifiers": [], "key": "F15" }, { "modifiers": [], "key": "F5" }],
 			callback: () => this.placeholder2(),
 		});
 
 		this.addCommand({
 			id: 'placeholder3',
 			name: 'placeholder3',
-			hotkeys: [{ "modifiers": [], "key": "F14" }],
+			hotkeys: [{ "modifiers": [], "key": "F16" }],
 			callback: () => this.placeholder3(),
 		});
 	
 	}
 
 	placeholder1() {
-		this.app.workspace.iterateRootLeaves((leaf: any) => {
-			console.log(leaf.getDisplayText(), leaf.getViewState());
-		});
+		let var1 = this.app.workspace.leftSplit;
+		let var2 = this.app.workspace.createLeafInParent(var1, 1);
 	}
 
 	placeholder2() {
-		let var1 = this.app.workspace.activeLeaf.view.containerEl;
-		console.log(var1);
+		let var1 = this.app.workspace.rootSplit;
+		let var2 = this.app.workspace.createLeafInParent(var1, 0);
+		this.app.workspace.setActiveLeaf(var2, false, true);
+		// this.app.workspace.revealLeaf(var2)
 	}
 
 	placeholder3() {
-		console.log(plugin_name + ': placeholder3')
-		
+		console.log('placeholder3')
 	}
-}
-	
+}	
 
 
 
