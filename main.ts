@@ -34,8 +34,8 @@ export default class MyPlugin extends Plugin {
 	}
 
 	placeholder1() {
-		let var1 = this.app.workspace.leftSplit;
-		let var2 = this.app.workspace.createLeafInParent(var1, 1);
+		console.log(this.app.workspace.getLayout())
+		// console.log(var1)
 	}
 
 	placeholder2() {
