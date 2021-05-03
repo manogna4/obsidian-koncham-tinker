@@ -34,8 +34,9 @@ export default class MyPlugin extends Plugin {
 	}
 
 	placeholder1() {
-		console.log(this.app.workspace.getLayout())
-		// console.log(var1)
+		let file = this.app.workspace.getActiveFile();
+		let file_cache = this.app.metadataCache.getFileCache(file);
+		console.log(file_cache)
 	}
 
 	placeholder2() {
