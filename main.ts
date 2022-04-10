@@ -47,11 +47,10 @@ export default class MyPlugin extends Plugin {
 	}
 
 	placeholder3() {
-		console.log('placeholder3')
+		let var1 = this.app.workspace;
+		console.log(var1);
 	}
 }	
-
-
 
 
 
